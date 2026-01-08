@@ -6,7 +6,6 @@
   <title>Planejador Diário</title>
 
   <style>
-    /* ===== RESET ===== */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: Arial, Helvetica, sans-serif;
@@ -14,27 +13,23 @@
       color: #202124;
     }
 
-    /* ===== LAYOUT PRINCIPAL ===== */
+    :root {
+      --hour-height: 60px; /* 60min */
+    }
+
     .app {
       display: grid;
       grid-template-columns: 260px 1fr;
       height: 100vh;
     }
 
-    /* ===== SIDEBAR ===== */
     .sidebar {
-      background: #ffffff;
+      background: #fff;
       border-right: 1px solid #e0e0e0;
       padding: 16px;
     }
 
-    .sidebar h2 {
-      font-size: 18px;
-      margin-bottom: 16px;
-    }
-
     .btn-create {
-      display: block;
       width: 100%;
       padding: 10px;
       border-radius: 24px;
@@ -46,63 +41,25 @@
       margin-bottom: 20px;
     }
 
-    .calendar-mini {
-      margin-top: 20px;
-    }
-
-    .calendar-mini table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 12px;
-      text-align: center;
-    }
-
-    .calendar-mini th,
-    .calendar-mini td {
-      padding: 6px;
-    }
-
-    .calendar-mini .today {
-      background: #1a73e8;
-      color: #fff;
-      border-radius: 50%;
-    }
-
-    /* ===== CONTEÚDO ===== */
     .content {
       display: flex;
       flex-direction: column;
     }
 
-    /* ===== HEADER ===== */
     .header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 12px 20px;
       border-bottom: 1px solid #e0e0e0;
-      background: #ffffff;
-    }
-
-    .header .date {
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .header .actions button {
-      margin-left: 8px;
-      padding: 6px 10px;
-      border-radius: 6px;
-      border: 1px solid #dadce0;
       background: #fff;
-      cursor: pointer;
     }
 
-    /* ===== AGENDA ===== */
     .agenda {
       flex: 1;
       overflow-y: auto;
-      background: #ffffff;
+      background: #fff;
+      position: relative;
     }
 
     .time-grid {
@@ -110,115 +67,225 @@
       grid-template-columns: 80px 1fr;
     }
 
-    .hour {
-      height: 60px;
+    .hour-label {
+      height: var(--hour-height);
       border-bottom: 1px solid #e0e0e0;
       padding: 6px;
       font-size: 12px;
-      color: #5f6368;
       text-align: right;
+      color: #5f6368;
     }
 
-    .slot {
-      height: 60px;
-      border-bottom: 1px solid #e0e0e0;
+    .grid {
       position: relative;
+      border-bottom: 1px solid #e0e0e0;
+      height: calc(24 * var(--hour-height));
     }
 
-    /* Evento (base, você vai controlar via JS depois) */
+    .line {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #eee;
+    }
+
     .event {
       position: absolute;
-      top: 6px;
-      left: 6px;
-      right: 6px;
-      height: calc(100% - 12px);
+      left: 8px;
+      right: 8px;
       background: #1a73e8;
       color: #fff;
       border-radius: 6px;
       padding: 6px;
       font-size: 12px;
+      cursor: grab;
+    }
+
+    .event small { opacity: 0.8; }
+
+    .resize {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      cursor: ns-resize;
+      background: rgba(255,255,255,.3);
     }
   </style>
 </head>
 <body>
-  <div class="app">
+<div class="app">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <h2>Agenda</h2>
-      <button class="btn-create">+ Criar</button>
+  <aside class="sidebar">
+    <button class="btn-create" id="createBtn">+ Criar evento</button>
+    <p><strong>Visões:</strong></p>
+    <p>• Dia (ativo)</p>
+    <p>• Semana (em breve)</p>
+    <p>• Mês (em breve)</p>
+  </aside>
 
-      <div class="calendar-mini">
-        <strong>Janeiro 2026</strong>
-        <table>
-          <thead>
-            <tr>
-              <th>D</th><th>S</th><th>T</th><th>Q</th><th>Q</th><th>S</th><th>S</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td></td><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td>
-            </tr>
-            <tr>
-              <td>4</td><td>5</td><td class="today">6</td><td>7</td><td>8</td><td>9</td><td>10</td>
-            </tr>
-          </tbody>
-        </table>
+  <main class="content">
+    <div class="header">
+      <div id="currentDate"></div>
+      <div>
+        <button id="prevDay">◀</button>
+        <button id="today">Hoje</button>
+        <button id="nextDay">▶</button>
       </div>
-    </aside>
+    </div>
 
-    <!-- CONTEÚDO -->
-    <main class="content">
-
-      <!-- HEADER -->
-      <div class="header">
-        <div class="date">7 de janeiro de 2026</div>
-        <div class="actions">
-          <button>&lt;</button>
-          <button>&gt;</button>
-          <button>Hoje</button>
-        </div>
+    <div class="agenda">
+      <div class="time-grid">
+        <div id="hours"></div>
+        <div class="grid" id="grid"></div>
       </div>
+    </div>
+  </main>
+</div>
 
-      <!-- AGENDA -->
-      <div class="agenda">
-        <div class="time-grid">
+<script>
+/* ================= ESTADO ================= */
+let state = {
+  date: new Date(),
+  events: JSON.parse(localStorage.getItem('events') || '[]')
+};
 
-          <!-- HORÁRIOS -->
-          <div>
-            <div class="hour">08:00</div>
-            <div class="hour">09:00</div>
-            <div class="hour">10:00</div>
-            <div class="hour">11:00</div>
-            <div class="hour">12:00</div>
-            <div class="hour">13:00</div>
-            <div class="hour">14:00</div>
-            <div class="hour">15:00</div>
-            <div class="hour">16:00</div>
-            <div class="hour">17:00</div>
-            <div class="hour">18:00</div>
-          </div>
+/* ================= UTIL ================= */
+const pad = n => n.toString().padStart(2, '0');
+const formatDate = d => `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()}`;
+const minutesFromTime = t => {
+  const [h,m] = t.split(':').map(Number);
+  return h*60 + m;
+};
 
-          <!-- SLOTS -->
-          <div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-            <div class="slot"></div>
-          </div>
+/* ================= RENDER ================= */
+const hoursEl = document.getElementById('hours');
+const gridEl = document.getElementById('grid');
+const dateEl = document.getElementById('currentDate');
 
-        </div>
-      </div>
+function renderHours() {
+  hoursEl.innerHTML = '';
+  for (let h = 0; h < 24; h++) {
+    const div = document.createElement('div');
+    div.className = 'hour-label';
+    div.textContent = `${pad(h)}:00`;
+    hoursEl.appendChild(div);
+  }
+}
 
-    </main>
-  </div>
+function renderGridLines() {
+  gridEl.innerHTML = '';
+  for (let i = 0; i < 24 * 4; i++) {
+    const line = document.createElement('div');
+    line.className = 'line';
+    line.style.top = `${i * 15}px`;
+    gridEl.appendChild(line);
+  }
+}
+
+function renderEvents() {
+  state.events
+    .filter(e => e.date === state.date.toISOString().slice(0,10))
+    .forEach(e => {
+      const div = document.createElement('div');
+      const start = minutesFromTime(e.start);
+      const end = minutesFromTime(e.end);
+
+      div.className = 'event';
+      div.style.top = `${start}px`;
+      div.style.height = `${end - start}px`;
+      div.style.background = e.color;
+      div.innerHTML = `<strong>${e.title}</strong><br><small>${e.start} - ${e.end}</small><div class="resize"></div>`;
+
+      enableDrag(div, e);
+      enableResize(div, e);
+
+      gridEl.appendChild(div);
+    });
+}
+
+function render() {
+  dateEl.textContent = formatDate(state.date);
+  renderHours();
+  renderGridLines();
+  renderEvents();
+}
+
+/* ================= EVENTOS ================= */
+function createEvent() {
+  const title = prompt('Título do evento');
+  if (!title) return;
+
+  const start = prompt('Hora início (HH:MM)', '09:00');
+  const end = prompt('Hora fim (HH:MM)', '10:00');
+
+  state.events.push({
+    id: Date.now(),
+    title,
+    date: state.date.toISOString().slice(0,10),
+    start,
+    end,
+    color: '#1a73e8'
+  });
+
+  save();
+  render();
+}
+
+function save() {
+  localStorage.setItem('events', JSON.stringify(state.events));
+}
+
+/* ================= DRAG ================= */
+function enableDrag(el, event) {
+  let startY;
+  el.onmousedown = e => {
+    if (e.target.classList.contains('resize')) return;
+    startY = e.clientY;
+    document.onmousemove = ev => {
+      const delta = ev.clientY - startY;
+      const minutes = Math.round(delta / 15) * 15;
+      const newStart = minutesFromTime(event.start) + minutes;
+      const duration = minutesFromTime(event.end) - minutesFromTime(event.start);
+
+      if (newStart >= 0) {
+        event.start = `${pad(Math.floor(newStart/60))}:${pad(newStart%60)}`;
+        event.end = `${pad(Math.floor((newStart+duration)/60))}:${pad((newStart+duration)%60)}`;
+        render();
+      }
+    };
+    document.onmouseup = () => { document.onmousemove = null; save(); };
+  };
+}
+
+/* ================= RESIZE ================= */
+function enableResize(el, event) {
+  const handle = el.querySelector('.resize');
+  handle.onmousedown = e => {
+    e.stopPropagation();
+    const startY = e.clientY;
+    document.onmousemove = ev => {
+      const delta = ev.clientY - startY;
+      const minutes = Math.round(delta / 15) * 15;
+      const newEnd = minutesFromTime(event.end) + minutes;
+      if (newEnd > minutesFromTime(event.start)) {
+        event.end = `${pad(Math.floor(newEnd/60))}:${pad(newEnd%60)}`;
+        render();
+      }
+    };
+    document.onmouseup = () => { document.onmousemove = null; save(); };
+  };
+}
+
+/* ================= CONTROLES ================= */
+document.getElementById('createBtn').onclick = createEvent;
+document.getElementById('today').onclick = () => { state.date = new Date(); render(); };
+document.getElementById('prevDay').onclick = () => { state.date.setDate(state.date.getDate()-1); render(); };
+document.getElementById('nextDay').onclick = () => { state.date.setDate(state.date.getDate()+1); render(); };
+
+render();
+</script>
 </body>
 </html>
