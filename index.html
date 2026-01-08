@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planejador Diário</title>
+
+  <style>
+    /* ===== RESET ===== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f6f8fc;
+      color: #202124;
+    }
+
+    /* ===== LAYOUT PRINCIPAL ===== */
+    .app {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      height: 100vh;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      background: #ffffff;
+      border-right: 1px solid #e0e0e0;
+      padding: 16px;
+    }
+
+    .sidebar h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+
+    .btn-create {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      border-radius: 24px;
+      border: none;
+      background: #1a73e8;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    .calendar-mini {
+      margin-top: 20px;
+    }
+
+    .calendar-mini table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .calendar-mini th,
+    .calendar-mini td {
+      padding: 6px;
+    }
+
+    .calendar-mini .today {
+      background: #1a73e8;
+      color: #fff;
+      border-radius: 50%;
+    }
+
+    /* ===== CONTEÚDO ===== */
+    .content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      border-bottom: 1px solid #e0e0e0;
+      background: #ffffff;
+    }
+
+    .header .date {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .header .actions button {
+      margin-left: 8px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #dadce0;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    /* ===== AGENDA ===== */
+    .agenda {
+      flex: 1;
+      overflow-y: auto;
+      background: #ffffff;
+    }
+
+    .time-grid {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+    }
+
+    .hour {
+      height: 60px;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 6px;
+      font-size: 12px;
+      color: #5f6368;
+      text-align: right;
+    }
+
+    .slot {
+      height: 60px;
+      border-bottom: 1px solid #e0e0e0;
+      position: relative;
+    }
+
+    /* Evento (base, você vai controlar via JS depois) */
+    .event {
+      position: absolute;
+      top: 6px;
+      left: 6px;
+      right: 6px;
+      height: calc(100% - 12px);
+      background: #1a73e8;
+      color: #fff;
+      border-radius: 6px;
+      padding: 6px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <h2>Agenda</h2>
+      <button class="btn-create">+ Criar</button>
+
+      <div class="calendar-mini">
+        <strong>Janeiro 2026</strong>
+        <table>
+          <thead>
+            <tr>
+              <th>D</th><th>S</th><th>T</th><th>Q</th><th>Q</th><th>S</th><th>S</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td></td><td></td><td></td><td></td><td>1</td><td>2</td><td>3</td>
+            </tr>
+            <tr>
+              <td>4</td><td>5</td><td class="today">6</td><td>7</td><td>8</td><td>9</td><td>10</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </aside>
+
+    <!-- CONTEÚDO -->
+    <main class="content">
+
+      <!-- HEADER -->
+      <div class="header">
+        <div class="date">7 de janeiro de 2026</div>
+        <div class="actions">
+          <button>&lt;</button>
+          <button>&gt;</button>
+          <button>Hoje</button>
+        </div>
+      </div>
+
+      <!-- AGENDA -->
+      <div class="agenda">
+        <div class="time-grid">
+
+          <!-- HORÁRIOS -->
+          <div>
+            <div class="hour">08:00</div>
+            <div class="hour">09:00</div>
+            <div class="hour">10:00</div>
+            <div class="hour">11:00</div>
+            <div class="hour">12:00</div>
+            <div class="hour">13:00</div>
+            <div class="hour">14:00</div>
+            <div class="hour">15:00</div>
+            <div class="hour">16:00</div>
+            <div class="hour">17:00</div>
+            <div class="hour">18:00</div>
+          </div>
+
+          <!-- SLOTS -->
+          <div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+</body>
+</html>
